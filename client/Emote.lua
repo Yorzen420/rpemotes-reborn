@@ -432,7 +432,7 @@ RegisterNetEvent('animations:ToggleCanDoAnims', function(value)
     LocalPlayer.state:set('canEmote', value, true)
 end)
 
-function OnEmotePlay(name, textureVariation)
+function OnEmotePlay(name, textureVariation)		-- an issue with the new release, wasn't able to view the prop emotes, but don't worry Yorzen fixed :P
     local emoteData = RP[name]
     if not emoteData then
         EmoteChatMessage("'" .. name .. "' " .. Translate('notvalidemote') .. "")
@@ -468,7 +468,6 @@ function OnEmotePlay(name, textureVariation)
         PlayExitAndEnterEmote(name, textureVariation)
         return
     end
-
 
     local animOption = emoteData.AnimationOptions
     if InVehicle then
@@ -533,7 +532,6 @@ function OnEmotePlay(name, textureVariation)
         return
     end
 
-    -- Small delay at the start
     if animOption and animOption.StartDelay then
         Wait(animOption.StartDelay)
     end
@@ -603,27 +601,27 @@ function OnEmotePlay(name, textureVariation)
     currentEmote = currentEmoteTable
 
     if animOption and animOption.Prop then
-        PropPl1, PropPl2, PropPl3, PropPl4, PropPl5, PropPl6 = table.unpack(animOption.PropPlacement)
+        PropPl1, PropPl2, PropPl3, PropPl4, PropPl5, PropPl6 = table.unpack(animOption.PropPlacement or {0.0, 0.0, 0.0, 0.0, 0.0, 0.0})
 
         Wait(animOption and animOption.EmoteDuration or 0)
 
         if not AddProp({
             prop1 = animOption.Prop,
             bone = animOption.PropBone,
-            off1 = PropPl1, off2 = PropPl2, off3 = PropPl3,
-            rot1 = PropPl4, rot2 = PropPl5, rot3 = PropPl6,
+            off1 = PropPl1 or 0.0, off2 = PropPl2 or 0.0, off3 = PropPl3 or 0.0,
+            rot1 = PropPl4 or 0.0, rot2 = PropPl5 or 0.0, rot3 = PropPl6 or 0.0,
             textureVariation = textureVariation,
             isClone = false,
             noCollision = animOption.PropNoCollision
         }) then return end
 
         if animOption.SecondProp then
-            SecondPropPl1, SecondPropPl2, SecondPropPl3, SecondPropPl4, SecondPropPl5, SecondPropPl6 = table.unpack(animOption.SecondPropPlacement)
+            SecondPropPl1, SecondPropPl2, SecondPropPl3, SecondPropPl4, SecondPropPl5, SecondPropPl6 = table.unpack(animOption.SecondPropPlacement or {0.0, 0.0, 0.0, 0.0, 0.0, 0.0})
             if not AddProp({
                 prop1 = animOption.SecondProp,
                 bone = animOption.SecondPropBone,
-                off1 = SecondPropPl1, off2 = SecondPropPl2, off3 = SecondPropPl3,
-                rot1 = SecondPropPl4, rot2 = SecondPropPl5, rot3 = SecondPropPl6,
+                off1 = SecondPropPl1 or 0.0, off2 = SecondPropPl2 or 0.0, off3 = SecondPropPl3 or 0.0,
+                rot1 = SecondPropPl4 or 0.0, rot2 = SecondPropPl5 or 0.0, rot3 = SecondPropPl6 or 0.0,
                 textureVariation = textureVariation,
                 isClone = false,
                 noCollision = animOption.SecondPropNoCollision
@@ -633,7 +631,6 @@ function OnEmotePlay(name, textureVariation)
             end
         end
 
-        -- Ptfx is on the prop, then we need to sync it
         if not animOption then return end
         if animOption.PtfxAsset and not animOption.PtfxNoProp then
             TriggerServerEvent("rpemotes:ptfx:syncProp", ObjToNet(attachedProp))
